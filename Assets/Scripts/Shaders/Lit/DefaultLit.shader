@@ -4,6 +4,8 @@ Shader "PBR/DefaultLit"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Color("Color", color) = (1,1,1,1)
+        _Shinness("Shinness", float) = 1
+
     }
     SubShader
     {
@@ -15,10 +17,6 @@ Shader "PBR/DefaultLit"
         LOD 100
         HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl" 
-            #include "Assets/Scripts/Shaders/Data/RegularSurface.hlsl"
-            #include "Assets/Scripts/Shaders/Data/RegularLight.hlsl"
-            #include "DefaultLighting.hlsl"
             #include "DefaultLit.hlsl"
         ENDHLSL
         Pass
