@@ -3,7 +3,7 @@
 
 float CalculateDiffuse(RegularSurface surface, RegularLight light) 
 {
-	float3 normalDir = surface.normal;
+	float3 normalDir = surface.Normal;
 	float3 lightDir = light.LightDir;
 	float diffuse = max(saturate(dot(normalDir, lightDir)), 0.00001);
 	return diffuse;
@@ -21,7 +21,7 @@ float3 CalculateDiffuseColor(RegularSurface surface, RegularLight light)
 
 float CalculatePhong(RegularSurface surface, RegularLight light, float3 viewDir) 
 {
-	float3 normalDir = surface.normal;
+	float3 normalDir = surface.Normal;
 	float3 lightDir = light.LightDir;
 
 	float3 refDir = reflect(-lightDir, normalDir);
@@ -38,7 +38,7 @@ float3 CalcualteSpec(RegularSurface surface, RegularLight light, float3 viewDir)
 
 	float pShinness = pow(spec, shinness);
 
-	float3 specColor = light.LightColor * pShinness;
+	float3 specColor = light.LightColor * pShinness * surface.SpecStrength;
 
 	return specColor;
 }

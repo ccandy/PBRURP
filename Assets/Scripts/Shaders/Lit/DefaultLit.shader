@@ -4,8 +4,8 @@ Shader "PBR/DefaultLit"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Color("Color", color) = (1,1,1,1)
-        _Shinness("Shinness", float) = 1
-
+        _Shinness("Shinness", float) = 32
+        _SpecStrength("Spec Strength", float) = 1
     }
     SubShader
     {
