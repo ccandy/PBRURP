@@ -5,7 +5,7 @@ struct PBRSurface
 {
 	float4 BaseColor;
 	float Metallic;
-	float Rougnness;
+	float Roughness;
 	float3 BaseF0;
 	float3 NormalWS;
 };
@@ -17,7 +17,7 @@ PBRSurface CreateSurface(float4 color, float4 texColor, float3 normal, float met
 
 	surface.BaseColor = color * texColor;
 	surface.Metallic = metallic;
-	surface.Rougnness = roughness;
+	surface.Roughness = roughness;
 
 	float3 baseF0 = float3(0.04, 0.04, 0.04);
 	float3 surfaceColor = surface.BaseColor.rgb;
