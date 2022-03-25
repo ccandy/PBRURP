@@ -55,17 +55,17 @@ VertexOutput VertProgram(VertexInput input)
 float4 FragProgram(VertexOutput input) : SV_Target
 {
 	float4 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-	PBRSurface surface = CreateSurface(_Color, texCol, _Metallic, _Roughness);
-	PBRLight light = CreatePBRLight(_MainLightColor.rgb, _MainLightPosition.xyz);
+	PBRSurface surface = CreateSurface(_Color, texCol, input.normal, _Metallic, _Roughness);
+	PBRLight light = CreatePBRLight(_MainLightColor, _MainLightPosition);
 	
 	float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - input.posWS);
 	float3 halfVector = normalize(viewDir + light.LightDir);
 	//CalcualteDirectionLightDiffuseColor(surface, light, halfVector);
 	float3 diffuseColor = CalcualteDirectionLight(surface, light, halfVector, viewDir);
 
-	float4 finalCol = float4(diffuseColor, 1) * float4(light.LightColor,1);
+	float4 finalCol = float4(diffuseColor, 1) * light.LightColor;
 
-	return surface.BaseColor;
+	return finalCol;
 }
 
 

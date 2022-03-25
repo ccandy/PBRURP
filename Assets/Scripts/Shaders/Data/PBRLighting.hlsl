@@ -23,6 +23,10 @@ float3 CalcualteDirectionLightDiffuseColor(PBRSurface surface, PBRLight light, f
 	float3 kd = (1 - F) * (1 - surface.Metallic);
 	float3 baseColor = surface.BaseColor.rgb;
 	float3 diffuseColor = baseColor / PI * kd;
+	float3 nl = max(saturate(dot(surface.NormalWS, light.LightDir)), 0.000001);
+
+	diffuseColor *= nl;
+
 
 	return diffuseColor;
 }
