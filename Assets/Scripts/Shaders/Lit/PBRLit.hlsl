@@ -1,16 +1,15 @@
-#ifndef DEFAULTLIT_INCLUDED
-#define DEFAULTLIT_INCLUDED
+#ifndef PBRLIT_INCLUDED
+#define PBRLIT_INCLUDED
 
-#include "Assets/Scripts/Shaders/Data/RegularSurface.hlsl"
-#include "Assets/Scripts/Shaders/Data/RegularLight.hlsl"
-#include "DefaultLighting.hlsl"
-
+#include "Assets/Scripts/Shaders/Data/PBRSurface.hlsl"
+#include "Assets/Scripts/Shaders/Data/PBRLight.hlsl"
+#include "Assets/Scripts/Shaders/Data/PBRLighting.hlsl"
 
 CBUFFER_START(UnityPerMaterial)
 float4 _MainTex_ST;
 float4 _Color;
-float _Shinness;
-float _SpecStrength;
+float _Roughness;
+float _Metallic;
 CBUFFER_END
 
 TEXTURE2D(_MainTex);
@@ -21,7 +20,7 @@ struct VertexInput
 	float4 posOS : POSITION;
 	float2 uv : TEXCOORD0;
 	float3 normal:NORMAL;
-	
+
 	UNITY_VERTEX_INPUT_INSTANCE_ID
 
 };
@@ -56,14 +55,19 @@ VertexOutput VertProgram(VertexInput input)
 float4 FragProgram(VertexOutput input) : SV_Target
 {
 	float4 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-	RegularSurface surface = CreateRegularSurface(_Color, texCol, input.normal, _Shinness, _SpecStrength);
-	RegularLight light = CreateRegularLight(_MainLightColor.rgb, _MainLightPosition.xyz, _MainLightPosition.xyz);
+	PBRSurface surface = CreateSurface(_Color, texCol, _Metallic, _Roughness);
+	PBRLight light = CreatePBRLight(_MainLightColor.rgb, _MainLightPosition.xyz);
+	
 	float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - input.posWS);
+	float3 halfVector = normalize(viewDir + light.LightDir);
+	//CalcualteDirectionLightDiffuseColor(surface, light, halfVector);
+	float3 diffuseColor = CalcualteDirectionLight(surface, light, halfVector, viewDir);
 
-	float3 diffuse = CalculateDiffuseColor(surface, light);
-	float3 spec = CalcualteSpec(surface, light, viewDir);
-	float4 finalCol = surface.BaseColor * float4(diffuse + spec, 1);
-	return finalCol;
+	float4 finalCol = float4(diffuseColor, 1) * float4(light.LightColor,1);
+
+	return surface.BaseColor;
 }
+
+
 
 #endif
