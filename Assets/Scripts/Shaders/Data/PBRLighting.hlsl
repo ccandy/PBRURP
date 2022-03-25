@@ -74,8 +74,14 @@ float3 CalcualteDirectionLightSpecColor(PBRSurface surface, PBRLight light, floa
 	float3 F = FresnelEquation(surface.BaseF0, halfVector, viewDir);
 	float D = DistributionGGX(surface, halfVector);
 	float G = GeometrySmith(surface, light, viewDir);
+	float NdotV = max(saturate(dot(surface.NormalWS, viewDir)), 0.000001);
+	float NdotL = max(saturate(dot(surface.NormalWS, light.LightDir)), 0.000001);
 
-	return D;
+	float FDG = F* G* D;
+	FDG /= 4 * NdotV * NdotL;
+
+
+	return FDG;
 }
 float3 CalcualteDirectionLight(PBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
 {
