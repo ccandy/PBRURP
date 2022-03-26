@@ -28,7 +28,15 @@ DisneyPBRSurface CreateSurface(float4 basecolor, float roughness, float metallic
 	surface.Roughness = roughness;
 	surface.Metallic = metallic;
 
-	surface.
+	surface.Specular = spec;
+	surface.SpecularTint = spectint;
+
+	surface.Anisotropic = ani;
+	surface.ClearCoat = clearcoat;
+	surface.ClearcoatGloss = clearcoatgloss;
+	surface.Sheen = sheen;
+
+	return surface;
 }
 
 
