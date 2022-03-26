@@ -41,9 +41,9 @@ float3 CalcualteDirectionLightDiffuseColor(PBRSurface surface, PBRLight light, f
 	float3 kd = (1 - F) * (1 - surface.Metallic);
 	float3 baseColor = surface.BaseColor.rgb;
 	float3 diffuseColor = baseColor / PI * kd;
-	float3 nl = max(saturate(dot(surface.NormalWS, light.LightDir)), 0.000001);
+	
 
-	diffuseColor *= nl;
+	//diffuseColor *= nl;
 
 
 	return diffuseColor;
@@ -51,7 +51,7 @@ float3 CalcualteDirectionLightDiffuseColor(PBRSurface surface, PBRLight light, f
 
 float ShlickGGX(PBRSurface surface, float3 dir, float k) 
 {
-	float ndotd = dot(surface.NormalWS, dir);
+	float ndotd = saturate(dot(surface.NormalWS, dir));
 	float result = ndotd / (ndotd * (1 - k) + k);
 
 	return result;
@@ -77,7 +77,7 @@ float3 CalcualteDirectionLightSpecColor(PBRSurface surface, PBRLight light, floa
 	float NdotV = max(saturate(dot(surface.NormalWS, viewDir)), 0.000001);
 	float NdotL = max(saturate(dot(surface.NormalWS, light.LightDir)), 0.000001);
 
-	float FDG = F* G* D;
+	float3 FDG = F* G* D;
 	FDG /= 4 * NdotV * NdotL;
 
 
@@ -86,7 +86,11 @@ float3 CalcualteDirectionLightSpecColor(PBRSurface surface, PBRLight light, floa
 float3 CalcualteDirectionLight(PBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
 {
 	float3 diffuseColor = CalcualteDirectionLightDiffuseColor(surface, light, halfVector, viewDir);
-	return diffuseColor;
+	float3 specColor = CalcualteDirectionLightSpecColor(surface, light, halfVector, viewDir);
+
+	float nl = max(saturate(dot(surface.NormalWS, light.LightDir)), 0.000001);
+
+	return (diffuseColor + specColor) * nl;
 }
 
 
