@@ -1,8 +1,8 @@
 #ifndef DISNEYPBRLIT_INCLUDED
 #define DISNEYPBRLIT_INCLUDED
 
-#include "Assets/Scripts/Shaders/Data/PBR/DisneyPBRSurface.hlsl"
-
+#include "Assets/Scripts/Shaders/Data/DisneyPBR/DisneyPBRSurface.hlsl"
+//Assets\Scripts\Shaders\Data\DisneyPBR
 CBUFFER_START(UnityPerMaterial)
 	float4 _MainTex_ST;
 	float4 _Color;
@@ -13,7 +13,7 @@ CBUFFER_START(UnityPerMaterial)
 	float _Anisotropic;
 	float _Specular;
 	float _SpecularTint;
-	float _ClearCoa;
+	float _ClearCoat;
 	float _ClearcoatGloss;
 	float _Sheen;
 
@@ -62,7 +62,10 @@ VertexOutput VertProgram(VertexInput input)
 float4 FragProgram(VertexOutput input) : SV_Target
 {
 
-
+	float4 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+	DisneyPBRSurface surface = CreateSurface(_Color, texCol, _Roughness, _Metallic,
+		_Anisotropic, _Specular, _SpecularTint,
+		_ClearCoat, _ClearcoatGloss, _Sheen);
 
 	return 1;
 }

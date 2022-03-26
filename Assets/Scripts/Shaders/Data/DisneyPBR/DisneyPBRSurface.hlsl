@@ -18,13 +18,13 @@ struct DisneyPBRSurface
 	
 };
 
-DisneyPBRSurface CreateSurface(float4 basecolor, float roughness, float metallic,
+DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float roughness, float metallic,
 	float spec, float spectint, float ani, float clearcoat, float clearcoatgloss,
 	float sheen) 
 {
 	DisneyPBRSurface surface;
 
-	surface.BaseColor = basecolor;
+	surface.BaseColor = basecolor * texcolor;
 	surface.Roughness = roughness;
 	surface.Metallic = metallic;
 
