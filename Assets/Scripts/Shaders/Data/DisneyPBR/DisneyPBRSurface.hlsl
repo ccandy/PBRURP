@@ -5,6 +5,8 @@
 struct DisneyPBRSurface 
 {
 	float4 BaseColor;
+	float3 Normal;
+
 	float Roughness;
 	float Metallic;
 	
@@ -18,13 +20,15 @@ struct DisneyPBRSurface
 	
 };
 
-DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float roughness, float metallic,
+DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal, float roughness, float metallic,
 	float spec, float spectint, float ani, float clearcoat, float clearcoatgloss,
 	float sheen) 
 {
 	DisneyPBRSurface surface;
 
 	surface.BaseColor = basecolor * texcolor;
+	surface.Normal = normal;
+
 	surface.Roughness = roughness;
 	surface.Metallic = metallic;
 

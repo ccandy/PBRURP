@@ -61,9 +61,10 @@ VertexOutput VertProgram(VertexInput input)
 
 float4 FragProgram(VertexOutput input) : SV_Target
 {
+	float3 normal = input.normal;
 
 	float4 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-	DisneyPBRSurface surface = CreateSurface(_Color, texCol, _Roughness, _Metallic,
+	DisneyPBRSurface surface = CreateSurface(_Color, texCol, normal, _Roughness, _Metallic,
 		_Anisotropic, _Specular, _SpecularTint,
 		_ClearCoat, _ClearcoatGloss, _Sheen);
 
