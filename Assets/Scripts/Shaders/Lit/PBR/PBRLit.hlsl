@@ -1,9 +1,9 @@
 #ifndef PBRLIT_INCLUDED
 #define PBRLIT_INCLUDED
 
-#include "Assets/Scripts/Shaders/Data/PBRSurface.hlsl"
-#include "Assets/Scripts/Shaders/Data/PBRLight.hlsl"
-#include "Assets/Scripts/Shaders/Data/PBRLighting.hlsl"
+#include "Assets/Scripts/Shaders/Data/PBR/PBRSurface.hlsl"
+#include "Assets/Scripts/Shaders/Data/PBR/PBRLight.hlsl"
+#include "Assets/Scripts/Shaders/Data/PBR/PBRLighting.hlsl"
 
 CBUFFER_START(UnityPerMaterial)
 float4 _MainTex_ST;

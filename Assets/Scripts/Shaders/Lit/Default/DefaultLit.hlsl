@@ -1,8 +1,8 @@
 #ifndef DEFAULTLIT_INCLUDED
 #define DEFAULTLIT_INCLUDED
 
-#include "Assets/Scripts/Shaders/Data/RegularSurface.hlsl"
-#include "Assets/Scripts/Shaders/Data/RegularLight.hlsl"
+#include "Assets/Scripts/Shaders/Data/Regular/RegularSurface.hlsl"
+#include "Assets/Scripts/Shaders/Data/Regular/RegularLight.hlsl"
 #include "DefaultLighting.hlsl"
 
 
