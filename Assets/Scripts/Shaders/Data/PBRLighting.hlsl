@@ -1,10 +1,12 @@
 #ifndef PBRLIGHTING_INCLUDED
 #define PBRLIGHTING_INCLUDED
 
-//#define PI 3.141592654f;
+//CalcualteDirectionLightColor
 
+SAMPLER(sampler_unity_SpecCube0);
+#define unity_ColorSpaceDielectricSpec half4(0.04, 0.04, 0.04, 1.0 - 0.04) 
 
-float3 FresnelEquation(float3 baseF0, float3 halfVector,float3 viewDir)
+float3 FresnelEquation(float3 baseF0, float3 halfVector, float3 viewDir)
 {
 	float vh = max(saturate(dot(viewDir, halfVector)), 0.000001);
 	float3 F = baseF0 + (1 - baseF0) * pow(1.0 - vh, 5.0);
@@ -13,7 +15,7 @@ float3 FresnelEquation(float3 baseF0, float3 halfVector,float3 viewDir)
 }
 
 
-float DistributionGGX(PBRSurface surface, float3 halfVector) 
+float DistributionGGX(PBRSurface surface, float3 halfVector)
 {
 	float roughness = surface.Roughness;
 	float roughness2 = roughness * roughness;
@@ -30,10 +32,6 @@ float DistributionGGX(PBRSurface surface, float3 halfVector)
 	return result;
 }
 
-// Calculate Direction Light
-
-
-//CalcualteDirectionLightColor
 float3 CalcualteDirectionLightDiffuseColor(PBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir) 
 {
 	
@@ -42,10 +40,6 @@ float3 CalcualteDirectionLightDiffuseColor(PBRSurface surface, PBRLight light, f
 	float3 baseColor = surface.BaseColor.rgb;
 	float3 diffuseColor = baseColor / PI * kd;
 	
-
-	//diffuseColor *= nl;
-
-
 	return diffuseColor;
 }
 
@@ -93,7 +87,86 @@ float3 CalcualteDirectionLight(PBRSurface surface, PBRLight light, float3 halfVe
 	return (diffuseColor + specColor) * nl;
 }
 
+//CalcualteInDirectionLightColor
+
+float3 FresnelSchlickRoughness(PBRSurface surface, float3 viewDir) 
+{
+	float3 normal = surface.NormalWS;
+	float nv = dot(normal, viewDir);
+	nv = max(nv, 0.0);
+
+	float roughness = surface.Roughness;
+	float3 F0 = surface.BaseF0;
+
+	return F0 + (max(float3(1, 1, 1) * (1 - roughness), F0) - F0) * pow(1.0 - nv, 5.0);
+
+}
+
+float CubeMapMip(float roughness) 
+{
+	float mipRoughness = roughness * (1.7 - 0.7 * roughness);
+	float mip = mipRoughness * UNITY_SPECCUBE_LOD_STEPS;
+
+	return mip;
+}
 
 
+float3 CalculateInDirectionDiffuseColor(PBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir) 
+{
+	float3 normal = surface.NormalWS;
+	float3 iblDiffuse = SampleSH(normal);
+	
+	float3 Flast = FresnelSchlickRoughness(surface, viewDir);
+	float3 kLast = (1 - Flast) * (1 - surface.Metallic);
+	float nl = max(saturate(dot(surface.NormalWS, light.LightDir)), 0.000001);
+	float3 iblDiffuseResult = iblDiffuse * kLast * surface.BaseColor.rgb;
+	return iblDiffuseResult;
+}
+
+float3 CalculateInDirectionSpecColor(PBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
+{
+	float roughness = surface.Roughness;
+	float mip = CubeMapMip(roughness);
+	float3 reflectVec = reflect(-viewDir, surface.NormalWS);
+	
+	half4 param = half4(reflectVec, mip);
+	
+	//float4 rgbm = texCUBElod(unity_SpecCube0, param);
+	float4 rgbm = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, sampler_unity_SpecCube0, reflectVec, mip);
+	float3 iblSpec = DecodeHDREnvironment(unity_SpecCube0_HDR, rgbm);
+	
+	float surfaceReduction = 1.0 / (roughness * roughness + 1.0);
+	float oneMinusReflectivity = unity_ColorSpaceDielectricSpec.a - unity_ColorSpaceDielectricSpec.a * surface.Metallic;
+
+	float grazingTerm = saturate((1 - roughness) + (1 - oneMinusReflectivity));
+	float nv = max(saturate(dot(surface.NormalWS, viewDir)), 0.000001);
+	float t = pow((1 - nv), 5);
+	float3 FresnelLerp = lerp(surface.BaseF0, grazingTerm, t);
+
+	float3 iblSpecularResult = surfaceReduction * iblSpec * FresnelLerp;
+
+	return iblSpecularResult;
+}
+
+float3 CalcualteInDirectionColor(PBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir) 
+{
+	float3 inDirectionDiffuse = CalculateInDirectionDiffuseColor(surface, light, halfVector, viewDir);
+	float3 inDirectionSpec = CalculateInDirectionSpecColor(surface, light, halfVector, viewDir);
+	float nl = max(saturate(dot(surface.NormalWS, light.LightDir)), 0.000001);
+	float3 inDirectionResult = (inDirectionDiffuse + inDirectionSpec) * nl;
+
+
+	return inDirectionResult;
+}
+
+float3 CalculateLightColor(PBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir) 
+{
+	float3 directionLightColor = CalcualteDirectionLight(surface, light, halfVector, viewDir);
+	float3 inDirectionLightColor = CalcualteInDirectionColor(surface, light, halfVector, viewDir);
+
+	float3 lightColor = directionLightColor + inDirectionLightColor;
+
+	return lightColor;
+}
 
 #endif

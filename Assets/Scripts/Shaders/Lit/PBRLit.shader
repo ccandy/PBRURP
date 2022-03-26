@@ -17,6 +17,8 @@ Shader "PBR/PBRLit"
         LOD 100
         HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
             #include "PBRLit.hlsl"
         ENDHLSL
 
