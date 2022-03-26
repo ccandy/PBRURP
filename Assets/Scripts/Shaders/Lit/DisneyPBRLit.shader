@@ -30,7 +30,10 @@ Shader "PBR/DisneyPBRLit"
 
         Pass
         {
-            Tags { "LightMode" = "UniversalForward" }
+            Tags 
+            { 
+                "LightMode" = "UniversalForward" 
+            }
             HLSLPROGRAM
             #pragma vertex VertProgram
             #pragma fragment FragProgram

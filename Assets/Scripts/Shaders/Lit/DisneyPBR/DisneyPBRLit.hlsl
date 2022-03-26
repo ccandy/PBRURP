@@ -45,12 +45,25 @@ struct VertexOutput
 VertexOutput VertProgram(VertexInput input)
 {
 	VertexOutput output;
+	output.posCS = TransformObjectToHClip(input.posOS.xyz);
+	output.uv = TRANSFORM_TEX(input.uv, _MainTex);
+
+	float3 normal = TransformObjectToWorldNormal(input.normal);
+	normal = normalize(normal);
+	output.normal = normal;
+
+	float4x4 objectToWorld = GetObjectToWorldMatrix();
+	float4 posWS = mul(objectToWorld, input.posOS);
+	output.posWS = posWS.xyz;
 
 	return output;
 }
 
 float4 FragProgram(VertexOutput input) : SV_Target
 {
+
+
+
 	return 1;
 }
 
