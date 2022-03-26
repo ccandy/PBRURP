@@ -133,7 +133,7 @@ float3 CalculateInDirectionSpecColor(PBRSurface surface, PBRLight light, float3 
 	
 	//float4 rgbm = texCUBElod(unity_SpecCube0, param);
 	float4 rgbm = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, sampler_unity_SpecCube0, reflectVec, mip);
-	float3 iblSpec = DecodeHDREnvironment(unity_SpecCube0_HDR, rgbm);
+	float3 iblSpec = DecodeHDREnvironment(rgbm, unity_SpecCube0_HDR);
 	
 	float surfaceReduction = 1.0 / (roughness * roughness + 1.0);
 	float oneMinusReflectivity = unity_ColorSpaceDielectricSpec.a - unity_ColorSpaceDielectricSpec.a * surface.Metallic;
@@ -145,6 +145,8 @@ float3 CalculateInDirectionSpecColor(PBRSurface surface, PBRLight light, float3 
 
 	float3 iblSpecularResult = surfaceReduction * iblSpec * FresnelLerp;
 
+	//return iblSpec;
+
 	return iblSpecularResult;
 }
 
@@ -154,7 +156,7 @@ float3 CalcualteInDirectionColor(PBRSurface surface, PBRLight light, float3 half
 	float3 inDirectionSpec = CalculateInDirectionSpecColor(surface, light, halfVector, viewDir);
 	float nl = max(saturate(dot(surface.NormalWS, light.LightDir)), 0.000001);
 	float3 inDirectionResult = (inDirectionDiffuse + inDirectionSpec) * nl;
-
+	return inDirectionSpec;
 
 	return inDirectionResult;
 }
@@ -165,6 +167,8 @@ float3 CalculateLightColor(PBRSurface surface, PBRLight light, float3 halfVector
 	float3 inDirectionLightColor = CalcualteInDirectionColor(surface, light, halfVector, viewDir);
 
 	float3 lightColor = directionLightColor + inDirectionLightColor;
+
+	//return inDirectionLightColor;
 
 	return lightColor;
 }
