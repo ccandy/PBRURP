@@ -2,6 +2,9 @@
 #define DISNEYPBRLIT_INCLUDED
 
 #include "Assets/Scripts/Shaders/Data/DisneyPBR/DisneyPBRSurface.hlsl"
+#include "Assets/Scripts/Shaders/Data/PBR/PBRLight.hlsl"
+#include "DisneyPBRLighting.hlsl"
+
 //Assets\Scripts\Shaders\Data\DisneyPBR
 CBUFFER_START(UnityPerMaterial)
 	float4 _MainTex_ST;
@@ -61,12 +64,21 @@ VertexOutput VertProgram(VertexInput input)
 
 float4 FragProgram(VertexOutput input) : SV_Target
 {
-	float3 normal = input.normal;
-
 	float4 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+	float3 normal = input.normal;
 	DisneyPBRSurface surface = CreateSurface(_Color, texCol, normal, _Roughness, _Metallic,
 		_Anisotropic, _Specular, _SpecularTint,
 		_ClearCoat, _ClearcoatGloss, _Sheen);
+	PBRLight light = CreatePBRLight(_MainLightColor, _MainLightPosition);
+
+	float3 lightDir = light.LightDir;
+	float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - input.posWS);
+	
+	float3 halfVector = normalize(viewDir + lightDir);
+
+
+	
+	
 
 	return 1;
 }
