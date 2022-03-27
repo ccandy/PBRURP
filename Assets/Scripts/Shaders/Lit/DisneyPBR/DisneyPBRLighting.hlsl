@@ -27,8 +27,8 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 	float FV = SchlickFresnel(F90, VdotN);
 
 	float3 diffuseColor = (surface.BaseColor.rgb / PI) * FL * FV;
-
-	return diffuseColor;
+	float nl = max(saturate(dot(normal, lightDir)), 0.000001);
+	return diffuseColor * nl * PI;
 }
 
 float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)

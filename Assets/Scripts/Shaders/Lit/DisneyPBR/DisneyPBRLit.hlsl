@@ -78,9 +78,10 @@ float4 FragProgram(VertexOutput input) : SV_Target
 
 	float3 diffuse = CalcuateDirectionDiffuse(surface, light, halfVector, viewDir);
 	
+	float3 finalCol = diffuse * light.LightColor.rgb;
 	
 
-	return float4(diffuse, 1);
+	return float4(finalCol, 1);
 }
 
 #endif
