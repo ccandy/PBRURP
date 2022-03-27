@@ -76,11 +76,11 @@ float4 FragProgram(VertexOutput input) : SV_Target
 	
 	float3 halfVector = normalize(viewDir + lightDir);
 
-
+	float3 diffuse = CalcuateDirectionDiffuse(surface, light, halfVector, viewDir);
 	
 	
 
-	return 1;
+	return float4(diffuse, 1);
 }
 
 #endif
