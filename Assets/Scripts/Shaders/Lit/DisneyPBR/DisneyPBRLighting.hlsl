@@ -61,14 +61,12 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 
 //spec
 
-float SmithGGGXAniso(DisneyPBRSurface surface, float3 viewDir)
+float SmithGGGXAniso(float NdotV, float VdotX, float VdotY, float ax, float ay)
 {
 	
-	float normal = surface.Normal;
+	float ggx = 1 / (NdotV + pow2(pow2(VdotX * ax) + pow2(VdotY * ay) + pow2(NdotV));
 
-	float NdotV = 
-
-	return 1;
+	return ggx;
 }
 
 float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
