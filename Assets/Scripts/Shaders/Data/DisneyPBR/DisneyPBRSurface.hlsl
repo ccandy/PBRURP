@@ -21,6 +21,8 @@ struct DisneyPBRSurface
 	float ClearcoatGloss;
 	float Sheen;
 	float SubSurface;
+
+	float3 ColorTint;
 	
 };
 
@@ -47,8 +49,14 @@ DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal,
 	surface.Sheen = sheen;
 
 	surface.SubSurface = subsurface;
+	
+	float luminance = 0.3 * basecolor.r + 0.6 * basecolor.g + 0.1 * basecolor.b;
+	surface.Luminance = luminance;
+	
+	float cTint = luminance > 0 ? basecolor / luminance : float3(1, 1, 1);
+	surface.ColorTint = cTint;
 
-	surface.Luminance = 3 * basecolor.r * 
+
 
 	return surface;
 }
