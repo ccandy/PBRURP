@@ -102,13 +102,19 @@ float GTR2(float NdotH, float a)
 	return a2 / (PI * log2(a2) * t);
 }
 
-
+float SmithGGX(float NdotV, float alphaG) 
+{
+	float a = pow2(alphaG);
+	float b = pow2(NdotV);
+	return 1 / (NdotV + sqrt(a + b - a * b));
+}
 
 float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
 {
 	float aniostrpic = surface.Anisotropic;
 	float roughness = surface.Roughness;
 	float sheen = surface.Sheen;
+	float clearcoatgloss = surface.ClearcoatGloss;
 
 	float3 normal = surface.Normal;
 	float3 tangent = surface.Tangent;
@@ -145,7 +151,9 @@ float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 ha
 
 	float3 Fsheen = CalcuateFsheen(FH, sheen, csheen);
 
-
+	float Dr = GTR1(NdotH, lerp(0.1, 0.001, clearcoatgloss));
+	float Fr = lerp(0.04, 1.0, FH);
+	//float Gr = 
 	return 1;
 }
 
