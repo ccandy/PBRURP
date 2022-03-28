@@ -147,10 +147,14 @@ float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 ha
 
 
 
-float3 CalcuateDirectionLightColor(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir) 
+//float3 CalcuateDirectionLightColor(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir) 
+
+float3 CalcuateDirectionLightColor(MyBRDFData data)
 {
-
-
+	DisneyPBRSurface surface = data.surface;
+	PBRLight light = data.light;
+	float3 halfVector = data.halfVector;
+	float3 viewDir = data.viewDir;
 
 	float3 diffuse = CalcuateDirectionDiffuse(surface, light, halfVector, viewDir);
 	float3 spec = CalcuateDirectionSpec(surface, light, halfVector, viewDir);

@@ -7,6 +7,7 @@ struct MyBRDFData
 	PBRLight light;
 
 	float3 halfVector;
+	float3 viewDir;
 
 	float NdotL;
 	float NdotH; 
@@ -31,7 +32,8 @@ MyBRDFData CreateData(DisneyPBRSurface surface, PBRLight light, float3 viewDir)
 	MyBRDFData data;
 	data.surface = surface;
 	data.light = light;
-
+	data.viewDir = viewDir;
+	
 	float3 lightDir = light.LightDir;
 	float3 halfVector = normalize(viewDir + lightDir);
 	float3 normal = surface.Normal;

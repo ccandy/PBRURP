@@ -84,17 +84,10 @@ float4 FragProgram(VertexOutput input) : SV_Target
 		_ClearCoat, _ClearcoatGloss, _Sheen, _SheenTint, _SubSurface);
 	PBRLight light = CreatePBRLight(_MainLightColor, _MainLightPosition);
 
-	float3 lightDir = light.LightDir;
 	float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - input.posWS);
-	
-	float3 halfVector = normalize(viewDir + lightDir);
+	MyBRDFData data = CreateData(surface, light, viewDir);
 
-	float3 lightCol = CalcuateDirectionLightColor(surface, light, halfVector, viewDir);
-	
-	float3 finalCol = lightCol * light.LightColor.rgb;
-	
-
-	return float4(finalCol, 1);
+	return 1;
 }
 
 #endif
