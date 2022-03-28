@@ -18,10 +18,16 @@ float Dot(float3 v1, float3 v2)
 	return saturate(dot(v1, v2));
 }
 
-float SchlickFresnel(float f90, float cosTheta) 
+float DiffuseFresnel(float f90, float cosTheta) 
 {
 	float result = (1 + (f90 - 1) * pow5(1 - cosTheta));
 	return result;
+}
+
+float SchlickFresnel(float u) 
+{
+	float m = clamp(1 - u, 0, 1);
+	return pow5(m);
 }
 
 float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
@@ -29,11 +35,7 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 	float3 normal = surface.Normal;
 	float3 lightDir = light.LightDir;
 
-	/*float LdotH = saturate(dot(lightDir, halfVector));
-	float VdotN = saturate(dot(viewDir, normal));
-	float LdotN = saturate(dot(lightDir, normal));
-	*/
-
+	
 	float LdotH = Dot(lightDir, halfVector);
 	float VdotN = Dot(viewDir, normal);
 	float LdotN = Dot(lightDir, normal);
@@ -41,8 +43,8 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 	float roughness = surface.Roughness;
 	float F90 = 0.5 + 2 * roughness * LdotH * LdotH;
 
-	float FL = SchlickFresnel(F90, LdotN);
-	float FV = SchlickFresnel(F90, VdotN);
+	float FL = DiffuseFresnel(F90, LdotN);
+	float FV = DiffuseFresnel(F90, VdotN);
 
 	float3 Fd = (surface.BaseColor.rgb / PI) * FL * FV;
 
@@ -64,21 +66,85 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 float SmithGGGXAniso(float NdotV, float VdotX, float VdotY, float ax, float ay)
 {
 	
-	float ggx = 1 / (NdotV + pow2(pow2(VdotX * ax) + pow2(VdotY * ay) + pow2(NdotV));
+	float ggx = 1 / (NdotV + pow2(pow2(VdotX * ax) + pow2(VdotY * ay) + pow2(NdotV)));
 
 	return ggx;
 }
 
-float GTR2Aniso
+float GTR2Aniso(float NdotH, float HdotX, float HdotY, float ax, float ay) 
+{
+	float ggx = 1 / (PI * ax * ay * pow2(pow2(HdotX / ax) + pow2(HdotY / ay) + NdotH * NdotH));
+	return ggx;
+}
+
+float3 CalcuateFsheen(float FH, float sheen, float3 csheen) 
+{
+	float3 Fsheen = FH * sheen * csheen;
+	return Fsheen;
+}
+
+float GTR1(float NdotH, float a)
+{
+	if (a >= 1) 
+	{
+		return 1 / PI;
+	}
+
+	float a2 = pow2(a);
+	float t = 1 + (a2 - 1) * pow2(NdotH);
+	return (a2 - 1) / (PI * log2(a2) * t);
+}
+
+float GTR2(float NdotH, float a)
+{
+	float a2 = pow2(a);
+	float t = 1 + (a2 - 1) * pow2(NdotH);
+	return a2 / (PI * log2(a2) * t);
+}
+
+
 
 float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
 {
 	float aniostrpic = surface.Anisotropic;
 	float roughness = surface.Roughness;
+	float sheen = surface.Sheen;
+
+	float3 normal = surface.Normal;
+	float3 tangent = surface.Tangent;
+	float3 binormal = surface.BiNormal;
+	float3 lightdir = light.LightDir;
+	float3 colorSpec = surface.ColorSpec0;
+	float3 csheen = surface.ColorSheen;
 
 	float aspect = pow2(1 - aniostrpic * 0.09);
 	float ax = max(0.001, pow2(roughness) / aspect);
 	float ay = max(0.001, pow2(roughness) * aspect);
+
+	float NdotL = Dot(normal, lightdir);
+	float NdotH = Dot(normal, halfVector);
+	
+	float HdotX = Dot(halfVector, tangent);
+	float HdotY = Dot(halfVector, binormal);
+
+	float LdotX = Dot(lightdir, tangent);
+	float LdotY = Dot(lightdir, binormal);
+	float LdotH = Dot(lightdir, halfVector);
+
+	float VdotX = Dot(viewDir, tangent);
+	float VdotY = Dot(viewDir, binormal);
+
+	float NdotV = Dot(normal, viewDir);
+
+	float Ds = GTR2Aniso(NdotH, HdotX, HdotY, ax, ay);
+	float FH = SchlickFresnel(LdotH);
+
+	float3 Fs = lerp(colorSpec, float3(1, 1, 1), FH);
+	float Gs = SmithGGGXAniso(NdotL, LdotX, LdotY, ax, ay);
+	Gs *= SmithGGGXAniso(NdotV, VdotX, VdotY, ax, ay);
+
+	float3 Fsheen = CalcuateFsheen(FH, sheen, csheen);
+
 
 	return 1;
 }
