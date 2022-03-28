@@ -3,10 +3,15 @@
 
 //DirectionLight Diffuse
 
+float pow5(float x) 
+{
+	return x * x * x * x * x;
+}
+
 
 float SchlickFresnel(float f90, float cosTheta) 
 {
-	float result = (1 + (f90 - 1) * pow((1 - cosTheta), 5));
+	float result = (1 + (f90 - 1) * pow5(1 - cosTheta));
 	return result;
 }
 

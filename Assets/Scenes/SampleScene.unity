@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18287712, g: 0.22857663, b: 0.30693394, a: 1}
+  m_IndirectSpecularColor: {r: 0.1800236, g: 0.22540037, b: 0.30675998, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 483638174}
   - component: {fileID: 483638173}
   m_Layer: 0
-  m_Name: DisneySphere
+  m_Name: DisneyPBRSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -174,7 +174,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: b6bfd53f04fd7c0419fb732827dcef34, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -589,13 +589,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: 0.3015072, y: -0.3000089, z: 0.14465679, w: 0.8933994}
+  m_LocalRotation: {x: 0.40877223, y: -0.2720877, z: 0.13473776, w: 0.86065054}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 38.721, y: -35.119, z: 5.705}
+  m_LocalEulerAnglesHint: {x: 50.981, y: -34.676, z: 0.863}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
