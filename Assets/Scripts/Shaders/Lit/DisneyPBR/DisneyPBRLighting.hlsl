@@ -8,6 +8,11 @@ float pow5(float x)
 	return x * x * x * x * x;
 }
 
+float pow2(float x) 
+{
+	return x * x;
+}
+
 
 float SchlickFresnel(float f90, float cosTheta) 
 {
