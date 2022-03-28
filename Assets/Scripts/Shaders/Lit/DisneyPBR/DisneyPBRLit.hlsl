@@ -87,7 +87,9 @@ float4 FragProgram(VertexOutput input) : SV_Target
 	float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - input.posWS);
 	MyBRDFData data = CreateData(surface, light, viewDir);
 
-	return 1;
+	float3 finalCol = CalcuateDirectionLightColor(data);
+
+	return float4(finalCol,1);
 }
 
 #endif

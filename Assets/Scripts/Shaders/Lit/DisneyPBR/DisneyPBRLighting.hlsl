@@ -16,6 +16,12 @@ float SchlickFresnel(float u)
 	return pow5(m);
 }
 
+float3 CalcuateFsheen(float FH, float sheen, float3 csheen)
+{
+	float3 Fsheen = FH * sheen * csheen;
+	return Fsheen;
+}
+
 //float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
 float3 CalcuateDirectionDiffuse(MyBRDFData data)
 {
@@ -42,11 +48,17 @@ float3 CalcuateDirectionDiffuse(MyBRDFData data)
 	float ss = 1.25 * (Fss * (1 / (LdotN + VdotN) - 0.5) + 0.5);
 
 	float subsurface = surface.SubSurface;
+	float metallic = surface.Metallic;
 
-	float3 diffuseColor =  lerp(Fd, ss, subsurface);
+	float FH = SchlickFresnel(LdotH);
+	float sheen = surface.Sheen;
+	float3 csheen = surface.ColorSheen;
+
+	float3 Fsheen = CalcuateFsheen(FH, sheen, csheen);
+	float3 diffuseColor =  ((1/PI) * lerp(Fd, ss, subsurface) * surface.BaseColor.rgb + Fsheen) * (1 - metallic);
 
 	float nl = max(saturate(dot(normal, lightDir)), 0.000001);
-	return diffuseColor * nl;// *PI;
+	return diffuseColor *nl *PI;
 }
 
 float SmithGGGXAniso(float NdotV, float VdotX, float VdotY, float ax, float ay)
@@ -63,11 +75,7 @@ float GTR2Aniso(float NdotH, float HdotX, float HdotY, float ax, float ay)
 	return ggx;
 }
 
-float3 CalcuateFsheen(float FH, float sheen, float3 csheen) 
-{
-	float3 Fsheen = FH * sheen * csheen;
-	return Fsheen;
-}
+
 
 float GTR1(float NdotH, float a)
 {
@@ -164,7 +172,7 @@ float3 CalcuateDirectionLightColor(MyBRDFData data)
 	float3 diffuse = CalcuateDirectionDiffuse(data);
 	float3 spec = CalcuateDirectionSpec(data);
 
-	float3 finalCol = spec;
+	float3 finalCol = diffuse + spec;
 
 	return finalCol;
 }
