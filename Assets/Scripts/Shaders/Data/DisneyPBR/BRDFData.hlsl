@@ -18,9 +18,11 @@ struct MyBRDFData
 	float LdotX; 
 	float LdotY;
 	float LdotH;
+	float LdotN;
 
 	float VdotX; 
 	float VdotY;
+	float VdotN;
 
 	float NdotV;
 };
@@ -28,8 +30,8 @@ struct MyBRDFData
 
 MyBRDFData CreateData(DisneyPBRSurface surface, PBRLight light, float3 viewDir)
 {
-
 	MyBRDFData data;
+
 	data.surface = surface;
 	data.light = light;
 	data.viewDir = viewDir;
@@ -49,9 +51,11 @@ MyBRDFData CreateData(DisneyPBRSurface surface, PBRLight light, float3 viewDir)
 	data.LdotX = Dot(lightDir, tangent);
 	data.LdotY = Dot(lightDir, binormal);
 	data.LdotH = Dot(lightDir, halfVector);
+	data.LdotN = Dot(lightDir, normal);
 
 	data.VdotX = Dot(viewDir, tangent);
 	data.VdotY = Dot(viewDir, binormal);
+	data.VdotN = Dot(viewDir, normal);
 
 	data.NdotV = Dot(normal, viewDir);
 

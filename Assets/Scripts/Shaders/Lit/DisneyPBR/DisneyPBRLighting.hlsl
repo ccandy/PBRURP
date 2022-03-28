@@ -16,15 +16,18 @@ float SchlickFresnel(float u)
 	return pow5(m);
 }
 
-float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
+//float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
+float3 CalcuateDirectionDiffuse(MyBRDFData data)
 {
+	DisneyPBRSurface surface = data.surface;
+
 	float3 normal = surface.Normal;
-	float3 lightDir = light.LightDir;
+	float3 lightDir = data.light.LightDir;
 
 	
-	float LdotH = Dot(lightDir, halfVector);
-	float VdotN = Dot(viewDir, normal);
-	float LdotN = Dot(lightDir, normal);
+	float LdotH = data.LdotH;
+	float VdotN = data.VdotN;
+	float LdotN = data.LdotN;
 
 	float roughness = surface.Roughness;
 	float F90 = 0.5 + 2 * roughness * LdotH * LdotH;
@@ -41,7 +44,6 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 	float subsurface = surface.SubSurface;
 
 	float3 diffuseColor =  lerp(Fd, ss, subsurface);
-
 
 	float nl = max(saturate(dot(normal, lightDir)), 0.000001);
 	return diffuseColor * nl;// *PI;
@@ -93,8 +95,11 @@ float SmithGGX(float NdotV, float alphaG)
 	return 1 / (NdotV + sqrt(a + b - a * b));
 }
 
-float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
+float3 CalcuateDirectionSpec(MyBRDFData data)
 {
+	DisneyPBRSurface surface = data.surface;
+	PBRLight light = data.light;
+
 	float aniostrpic = surface.Anisotropic;
 	float roughness = surface.Roughness;
 	float sheen = surface.Sheen;
@@ -111,20 +116,20 @@ float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 ha
 	float ax = max(0.001, pow2(roughness) / aspect);
 	float ay = max(0.001, pow2(roughness) * aspect);
 
-	float NdotL = Dot(normal, lightdir);
-	float NdotH = Dot(normal, halfVector);
+	float NdotL = data.NdotL;
+	float NdotH = data.NdotH;
 	
-	float HdotX = Dot(halfVector, tangent);
-	float HdotY = Dot(halfVector, binormal);
+	float HdotX = data.HdotX;
+	float HdotY = data.HdotY;
 
-	float LdotX = Dot(lightdir, tangent);
-	float LdotY = Dot(lightdir, binormal);
-	float LdotH = Dot(lightdir, halfVector);
+	float LdotX = data.LdotX;
+	float LdotY = data.LdotY;
+	float LdotH = data.LdotH;
 
-	float VdotX = Dot(viewDir, tangent);
-	float VdotY = Dot(viewDir, binormal);
+	float VdotX = data.VdotX;
+	float VdotY = data.VdotY;
 
-	float NdotV = Dot(normal, viewDir);
+	float NdotV = data.NdotV;
 
 	float Ds = GTR2Aniso(NdotH, HdotX, HdotY, ax, ay);
 	float FH = SchlickFresnel(LdotH);
@@ -156,8 +161,8 @@ float3 CalcuateDirectionLightColor(MyBRDFData data)
 	float3 halfVector = data.halfVector;
 	float3 viewDir = data.viewDir;
 
-	float3 diffuse = CalcuateDirectionDiffuse(surface, light, halfVector, viewDir);
-	float3 spec = CalcuateDirectionSpec(surface, light, halfVector, viewDir);
+	float3 diffuse = CalcuateDirectionDiffuse(data);
+	float3 spec = CalcuateDirectionSpec(data);
 
 	float3 finalCol = spec;
 
