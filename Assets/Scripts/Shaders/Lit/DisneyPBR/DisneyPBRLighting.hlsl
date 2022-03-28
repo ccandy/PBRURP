@@ -29,14 +29,21 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 	float VdotN = saturate(dot(viewDir, normal));
 	float LdotN = saturate(dot(lightDir, normal));
 
-
 	float roughness = surface.Roughness;
 	float F90 = 0.5 + 2 * roughness * LdotH * LdotH;
 
 	float FL = SchlickFresnel(F90, LdotN);
 	float FV = SchlickFresnel(F90, VdotN);
 
-	float3 diffuseColor = (surface.BaseColor.rgb / PI) * FL * FV;
+	float3 Fd = (surface.BaseColor.rgb / PI) * FL * FV;
+
+	float Fss90 = LdotH * LdotH * roughness;
+	float Fss = lerp(1.0, Fss90, FL) * lerp(1.0, Fss90, FV);
+
+
+	float3 diffuseColor = Fd;
+
+
 	float nl = max(saturate(dot(normal, lightDir)), 0.000001);
 	return diffuseColor * nl * PI;
 }
