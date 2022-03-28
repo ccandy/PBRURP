@@ -13,6 +13,10 @@ float pow2(float x)
 	return x * x;
 }
 
+float Dot(float3 v1, float3 v2) 
+{
+	return saturate(dot(v1, v2));
+}
 
 float SchlickFresnel(float f90, float cosTheta) 
 {
@@ -25,9 +29,14 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 	float3 normal = surface.Normal;
 	float3 lightDir = light.LightDir;
 
-	float LdotH = saturate(dot(lightDir,halfVector));
+	/*float LdotH = saturate(dot(lightDir, halfVector));
 	float VdotN = saturate(dot(viewDir, normal));
 	float LdotN = saturate(dot(lightDir, normal));
+	*/
+
+	float LdotH = Dot(lightDir, halfVector);
+	float VdotN = Dot(viewDir, normal);
+	float LdotN = Dot(lightDir, normal);
 
 	float roughness = surface.Roughness;
 	float F90 = 0.5 + 2 * roughness * LdotH * LdotH;
@@ -51,6 +60,16 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 }
 
 //spec
+
+float SmithGGGXAniso(DisneyPBRSurface surface, float3 viewDir)
+{
+	
+	float normal = surface.Normal;
+
+	float NdotV = 
+
+	return 1;
+}
 
 float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
 {
