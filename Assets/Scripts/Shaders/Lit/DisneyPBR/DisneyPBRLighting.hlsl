@@ -39,13 +39,15 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 
 	float Fss90 = LdotH * LdotH * roughness;
 	float Fss = lerp(1.0, Fss90, FL) * lerp(1.0, Fss90, FV);
+	float ss = 1.25 * (Fss * (1 / (LdotN + VdotN) - 0.5) + 0.5);
 
+	float subsurface = surface.SubSurface;
 
-	float3 diffuseColor = Fd;
+	float3 diffuseColor =  lerp(Fd, ss, subsurface);
 
 
 	float nl = max(saturate(dot(normal, lightDir)), 0.000001);
-	return diffuseColor * nl * PI;
+	return diffuseColor * nl;// *PI;
 }
 
 float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
@@ -58,7 +60,7 @@ float3 CalcuateDirectionLightColor(DisneyPBRSurface surface, PBRLight light, flo
 	float3 diffuse = CalcuateDirectionDiffuse(surface, light, halfVector, viewDir);
 	float3 spec = CalcuateDirectionSpec(surface, light, halfVector, viewDir);
 
-	float3 finalCol = diffuse + spec;
+	float3 finalCol = diffuse;
 
 	return finalCol;
 }

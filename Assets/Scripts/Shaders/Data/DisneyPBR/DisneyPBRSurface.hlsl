@@ -19,12 +19,13 @@ struct DisneyPBRSurface
 	float ClearCoat;
 	float ClearcoatGloss;
 	float Sheen;
+	float SubSurface;
 	
 };
 
 DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal, float3 tangent, float roughness, float metallic,
 	float spec, float spectint, float ani, float clearcoat, float clearcoatgloss,
-	float sheen) 
+	float sheen, float subsurface) 
 {
 	DisneyPBRSurface surface;
 
@@ -43,6 +44,8 @@ DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal,
 	surface.ClearCoat = clearcoat;
 	surface.ClearcoatGloss = clearcoatgloss;
 	surface.Sheen = sheen;
+
+	surface.SubSurface = subsurface;
 
 	return surface;
 }
