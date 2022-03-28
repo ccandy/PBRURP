@@ -69,8 +69,17 @@ float SmithGGGXAniso(float NdotV, float VdotX, float VdotY, float ax, float ay)
 	return ggx;
 }
 
+float GTR2Aniso
+
 float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
 {
+	float aniostrpic = surface.Anisotropic;
+	float roughness = surface.Roughness;
+
+	float aspect = pow2(1 - aniostrpic * 0.09);
+	float ax = max(0.001, pow2(roughness) / aspect);
+	float ay = max(0.001, pow2(roughness) * aspect);
+
 	return 1;
 }
 
