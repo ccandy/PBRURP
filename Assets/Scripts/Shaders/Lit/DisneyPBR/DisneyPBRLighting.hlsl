@@ -2,7 +2,7 @@
 #define DISNEYPBRLIGHTING_INCLUDED
 
 //DirectionLight Diffuse
-#include "Assets/Scripts/Shaders/Util/MathFunction.hlsl"
+
 
 float DiffuseFresnel(float f90, float cosTheta) 
 {
@@ -149,6 +149,9 @@ float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 ha
 
 float3 CalcuateDirectionLightColor(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir) 
 {
+
+
+
 	float3 diffuse = CalcuateDirectionDiffuse(surface, light, halfVector, viewDir);
 	float3 spec = CalcuateDirectionSpec(surface, light, halfVector, viewDir);
 

@@ -1,8 +1,10 @@
 #ifndef DISNEYPBRLIT_INCLUDED
 #define DISNEYPBRLIT_INCLUDED
 
+#include "Assets/Scripts/Shaders/Util/MathFunction.hlsl"
 #include "Assets/Scripts/Shaders/Data/DisneyPBR/DisneyPBRSurface.hlsl"
 #include "Assets/Scripts/Shaders/Data/PBR/PBRLight.hlsl"
+#include "Assets/Scripts/Shaders/Data/DisneyPBR/BRDFData.hlsl"
 #include "DisneyPBRLighting.hlsl"
 
 //Assets\Scripts\Shaders\Data\DisneyPBR
