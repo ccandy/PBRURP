@@ -19,6 +19,7 @@ CBUFFER_START(UnityPerMaterial)
 	float _ClearCoat;
 	float _ClearcoatGloss;
 	float _Sheen;
+	float _SheenTint;
 	float _SubSurface;
 
 CBUFFER_END
@@ -78,7 +79,7 @@ float4 FragProgram(VertexOutput input) : SV_Target
 	float3 tangent = input.tangent;
 	DisneyPBRSurface surface = CreateSurface(_Color, texCol, normal,tangent, _Roughness, _Metallic,
 		_Anisotropic, _Specular, _SpecularTint,
-		_ClearCoat, _ClearcoatGloss, _Sheen, _SubSurface);
+		_ClearCoat, _ClearcoatGloss, _Sheen, _SheenTint, _SubSurface);
 	PBRLight light = CreatePBRLight(_MainLightColor, _MainLightPosition);
 
 	float3 lightDir = light.LightDir;

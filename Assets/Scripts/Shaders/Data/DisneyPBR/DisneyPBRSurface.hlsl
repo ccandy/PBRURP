@@ -24,12 +24,13 @@ struct DisneyPBRSurface
 
 	float3 ColorTint;
 	float3 ColorSpec0;
+	float3 ColorSheen;
 	
 };
 
 DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal, float3 tangent, float roughness, float metallic,
 	float spec, float spectint, float ani, float clearcoat, float clearcoatgloss,
-	float sheen, float subsurface) 
+	float sheen, float sheenTint, float subsurface) 
 {
 	DisneyPBRSurface surface;
 
@@ -61,6 +62,8 @@ DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal,
 	float3 cSpec0 = lerp(temp1, cTint, spectint);
 	surface.ColorSpec0 = cSpec0;
 
+	float3 cSheen = lerp(float3(1, 1, 1), cTint, sheenTint);
+	surface.ColorSheen = cSheen;
 
 	return surface;
 }

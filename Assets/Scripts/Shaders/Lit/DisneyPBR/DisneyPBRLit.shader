@@ -13,6 +13,7 @@ Shader "PBR/DisneyPBRLit"
         _ClearCoat("Clear Coat", Range(0,1)) = 1
         _ClearcoatGloss("Clear Coat Gloss", Range(0,1)) = 1
         _Sheen("Sheen", Range(0,1)) = 1
+        _SheenTint("Sheen Tint", Range(0,1)) = 1
     }
         SubShader
         {
