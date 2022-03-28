@@ -50,10 +50,15 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 	return diffuseColor * nl;// *PI;
 }
 
+//spec
+
 float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir)
 {
 	return 1;
 }
+
+
+
 
 float3 CalcuateDirectionLightColor(DisneyPBRSurface surface, PBRLight light, float3 halfVector, float3 viewDir) 
 {

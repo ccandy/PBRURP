@@ -11,7 +11,8 @@ struct DisneyPBRSurface
 
 	float Roughness;
 	float Metallic;
-	
+	float Luminance;
+
 	float Specular;
 	float SpecularTint;
 
@@ -46,6 +47,8 @@ DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal,
 	surface.Sheen = sheen;
 
 	surface.SubSurface = subsurface;
+
+	surface.Luminance = 3 * basecolor.r * 
 
 	return surface;
 }
