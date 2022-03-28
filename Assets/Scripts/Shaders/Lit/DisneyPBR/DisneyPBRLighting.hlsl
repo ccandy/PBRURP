@@ -2,21 +2,7 @@
 #define DISNEYPBRLIGHTING_INCLUDED
 
 //DirectionLight Diffuse
-
-float pow5(float x) 
-{
-	return x * x * x * x * x;
-}
-
-float pow2(float x) 
-{
-	return x * x;
-}
-
-float Dot(float3 v1, float3 v2) 
-{
-	return saturate(dot(v1, v2));
-}
+#include "Assets/Scripts/Shaders/Util/MathFunction.hlsl"
 
 float DiffuseFresnel(float f90, float cosTheta) 
 {
@@ -61,12 +47,10 @@ float3 CalcuateDirectionDiffuse(DisneyPBRSurface surface, PBRLight light, float3
 	return diffuseColor * nl;// *PI;
 }
 
-//spec
-
 float SmithGGGXAniso(float NdotV, float VdotX, float VdotY, float ax, float ay)
 {
 	
-	float ggx = 1 / (NdotV + pow2(pow2(VdotX * ax) + pow2(VdotY * ay) + pow2(NdotV)));
+	float ggx = 1 / (NdotV + sqrt(pow2(VdotX * ax) + pow2(VdotY * ay) + pow2(NdotV)));
 
 	return ggx;
 }
@@ -123,7 +107,7 @@ float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 ha
 	float3 colorSpec = surface.ColorSpec0;
 	float3 csheen = surface.ColorSheen;
 
-	float aspect = pow2(1 - aniostrpic * 0.09);
+	float aspect = sqrt(1 - aniostrpic * 0.09);
 	float ax = max(0.001, pow2(roughness) / aspect);
 	float ay = max(0.001, pow2(roughness) * aspect);
 
@@ -153,8 +137,11 @@ float3 CalcuateDirectionSpec(DisneyPBRSurface surface, PBRLight light, float3 ha
 
 	float Dr = GTR1(NdotH, lerp(0.1, 0.001, clearcoatgloss));
 	float Fr = lerp(0.04, 1.0, FH);
-	//float Gr = 
-	return 1;
+	float Gr = SmithGGX(NdotL, 0.25) * SmithGGX(NdotV, 0.25);
+
+	float3 final = Gs * Fs * Ds + 0.25 * clearcoatgloss * Gr * Fr * Dr;
+
+	return final;
 }
 
 
@@ -165,7 +152,7 @@ float3 CalcuateDirectionLightColor(DisneyPBRSurface surface, PBRLight light, flo
 	float3 diffuse = CalcuateDirectionDiffuse(surface, light, halfVector, viewDir);
 	float3 spec = CalcuateDirectionSpec(surface, light, halfVector, viewDir);
 
-	float3 finalCol = diffuse;
+	float3 finalCol = spec;
 
 	return finalCol;
 }
