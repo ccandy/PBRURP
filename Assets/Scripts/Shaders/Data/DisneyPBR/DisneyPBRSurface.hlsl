@@ -28,7 +28,7 @@ struct DisneyPBRSurface
 	
 };
 
-DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal, float3 tangent, float roughness, float metallic,
+DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal, float3 tangent, float3 binormal, float roughness, float metallic,
 	float spec, float spectint, float ani, float clearcoat, float clearcoatgloss,
 	float sheen, float sheenTint, float subsurface) 
 {
@@ -37,7 +37,7 @@ DisneyPBRSurface CreateSurface(float4 basecolor, float4 texcolor, float3 normal,
 	surface.BaseColor = basecolor * texcolor;
 	surface.Normal = normal;
 	surface.Tangent = tangent;
-	surface.BiNormal = cross(normal, tangent);
+	surface.BiNormal = binormal;
 
 	surface.Roughness = roughness;
 	surface.Metallic = metallic;

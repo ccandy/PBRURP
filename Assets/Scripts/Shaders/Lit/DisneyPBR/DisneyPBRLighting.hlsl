@@ -16,6 +16,45 @@ float SchlickFresnel(float u)
 	return pow5(m);
 }
 
+float GTR1(float NdotH, float a)
+{
+	if (a >= 1)
+	{
+		return 1 / PI;
+	}
+
+	float a2 = pow2(a);
+	float t = 1 + (a2 - 1) * pow2(NdotH);
+	return (a2 - 1) / (PI * log(a2) * t);
+}
+
+float GTR2(float NdotH, float a)
+{
+	float a2 = pow2(a);
+	float t = 1 + (a2 - 1) * pow2(NdotH);
+	return a2 / (PI * pow2(t));
+}
+
+float GTR2Aniso(float NdotH, float HdotX, float HdotY, float ax, float ay)
+{
+	float ggx = 1 / (PI * ax * ay * pow2(pow2(HdotX / ax) + pow2(HdotY / ay) + pow2(NdotH)));
+	return ggx;
+}
+
+float SmithGGX(float NdotV, float alphaG)
+{
+	float a = pow2(alphaG);
+	float b = pow2(NdotV);
+	return 1 / (NdotV + sqrt(a + b - a * b));
+}
+
+float SmithGGGXAniso(float NdotV, float VdotX, float VdotY, float ax, float ay)
+{
+	float ggx = 1/ (NdotV + sqrt(pow2(VdotX * ax) + pow2(VdotY*ay) + pow2(NdotV)));
+	return ggx;
+}
+
+
 float3 CalcuateFsheen(float FH, float sheen, float3 csheen)
 {
 	float3 Fsheen = FH * sheen * csheen;
@@ -60,49 +99,7 @@ float3 CalcuateDirectionDiffuse(MyBRDFData data)
 	float nl = max(saturate(dot(normal, lightDir)), 0.000001);
 	return diffuseColor *nl *PI;
 }
-
-float SmithGGGXAniso(float NdotV, float VdotX, float VdotY, float ax, float ay)
-{
-	
-	float ggx = 1 / (NdotV + sqrt(pow2(VdotX * ax) + pow2(VdotY * ay) + pow2(NdotV)));
-
-	return ggx;
-}
-
-float GTR2Aniso(float NdotH, float HdotX, float HdotY, float ax, float ay) 
-{
-	float ggx = 1 / (PI * ax * ay * pow2(pow2(HdotX / ax) + pow2(HdotY / ay) + NdotH * NdotH));
-	return ggx;
-}
-
-
-
-float GTR1(float NdotH, float a)
-{
-	if (a >= 1) 
-	{
-		return 1 / PI;
-	}
-
-	float a2 = pow2(a);
-	float t = 1 + (a2 - 1) * pow2(NdotH);
-	return (a2 - 1) / (PI * log2(a2) * t);
-}
-
-float GTR2(float NdotH, float a)
-{
-	float a2 = pow2(a);
-	float t = 1 + (a2 - 1) * pow2(NdotH);
-	return a2 / (PI * log2(a2) * t);
-}
-
-float SmithGGX(float NdotV, float alphaG) 
-{
-	float a = pow2(alphaG);
-	float b = pow2(NdotV);
-	return 1 / (NdotV + sqrt(a + b - a * b));
-}
-
+//spec
 float3 CalcuateDirectionSpec(MyBRDFData data)
 {
 	DisneyPBRSurface surface = data.surface;
@@ -112,6 +109,7 @@ float3 CalcuateDirectionSpec(MyBRDFData data)
 	float roughness = surface.Roughness;
 	float sheen = surface.Sheen;
 	float clearcoatgloss = surface.ClearcoatGloss;
+	float clearcoat = surface.ClearCoat;
 
 	float3 normal = surface.Normal;
 	float3 tangent = surface.Tangent;
@@ -119,10 +117,6 @@ float3 CalcuateDirectionSpec(MyBRDFData data)
 	float3 lightdir = light.LightDir;
 	float3 colorSpec = surface.ColorSpec0;
 	float3 csheen = surface.ColorSheen;
-
-	float aspect = sqrt(1 - aniostrpic * 0.09);
-	float ax = max(0.001, pow2(roughness) / aspect);
-	float ay = max(0.001, pow2(roughness) * aspect);
 
 	float NdotL = data.NdotL;
 	float NdotH = data.NdotH;
@@ -138,11 +132,16 @@ float3 CalcuateDirectionSpec(MyBRDFData data)
 	float VdotY = data.VdotY;
 
 	float NdotV = data.NdotV;
+	
+	float aspect = sqrt(1 - aniostrpic * 0.09);
+	float ax = max(0.001, pow2(roughness) / aspect);
+	float ay = max(0.001, pow2(roughness) * aspect);
 
 	float Ds = GTR2Aniso(NdotH, HdotX, HdotY, ax, ay);
 	float FH = SchlickFresnel(LdotH);
 
 	float3 Fs = lerp(colorSpec, float3(1, 1, 1), FH);
+
 	float Gs = SmithGGGXAniso(NdotL, LdotX, LdotY, ax, ay);
 	Gs *= SmithGGGXAniso(NdotV, VdotX, VdotY, ax, ay);
 
@@ -152,7 +151,7 @@ float3 CalcuateDirectionSpec(MyBRDFData data)
 	float Fr = lerp(0.04, 1.0, FH);
 	float Gr = SmithGGX(NdotL, 0.25) * SmithGGX(NdotV, 0.25);
 
-	float3 final = Gs * Fs * Ds + 0.25 * clearcoatgloss * Gr * Fr * Dr;
+	float3 final = Gs * Fs * Ds + 0.25 * clearcoat * Gr * Fr * Dr;
 
 	return final;
 }
